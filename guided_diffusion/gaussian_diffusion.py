@@ -985,7 +985,7 @@ class GaussianDiffusion:
         #Interpolation between mask at t timestep and noise at t timestep
         res_t = self.q_sample(mask_t, t, noise=image_t)
 
-        noise = noise + image_t
+        noise = noise + noise_image
 
         x_t = x_start.float()
         x_t[:, -1:, ...] = res_t.float()
