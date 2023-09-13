@@ -12,6 +12,7 @@ from . import dist_util, logger
 from .fp16_util import MixedPrecisionTrainer
 from .nn import update_ema
 from .resample import LossAwareSampler, UniformSampler
+import subprocess
 # from visdom import Visdom
 # viz = Visdom(port=8850)
 # loss_window = viz.line( Y=th.zeros((1)).cpu(), X=th.zeros((1)).cpu(), opts=dict(xlabel='epoch', ylabel='Loss', title='loss'))
@@ -169,6 +170,8 @@ class TrainLoop:
     def run_loop(self):
         i = 0
         data_iter = iter(self.dataloader)
+        validate_steps = 100
+
         while (
             not self.lr_anneal_steps
             or self.step + self.resume_step < self.lr_anneal_steps
@@ -184,6 +187,8 @@ class TrainLoop:
                     batch, cond, name = next(data_iter)
 
             self.run_step(batch, cond)
+            if self.step% validate_steps == 0:
+                subprocess.call("/home/ampatishan/PycharmProjects/MedSeg_modified/scripts/validate.sh")
 
            
             i += 1
@@ -284,8 +289,9 @@ class TrainLoop:
                     filename = f"savedmodel{(self.step+self.resume_step):06d}.pt"
                 else:
                     filename = f"emasavedmodel_{rate}_{(self.step+self.resume_step):06d}.pt"
-                with bf.BlobFile(bf.join(get_blob_logdir(), filename), "wb") as f:
+                with bf.BlobFile(bf.join(get_blob_logdir(), 'saved_model.pt'), "wb") as f:
                     th.save(state_dict, f)
+
 
         save_checkpoint(0, self.mp_trainer.master_params)
         for rate, params in zip(self.ema_rate, self.ema_params):
@@ -299,6 +305,8 @@ class TrainLoop:
                 th.save(self.opt.state_dict(), f)
 
         dist.barrier()
+
+
 
 
 def parse_resume_step_from_filename(filename):
