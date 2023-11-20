@@ -170,7 +170,7 @@ class TrainLoop:
     def run_loop(self):
         i = 0
         data_iter = iter(self.dataloader)
-        validate_steps = 100000
+        validate_steps = 10000
 
         while (
             not self.lr_anneal_steps
@@ -187,7 +187,7 @@ class TrainLoop:
                     batch, cond, name = next(data_iter)
 
             self.run_step(batch, cond)
-            if self.step% validate_steps == 0 and self.step>10000:
+            if self.step% validate_steps == 0 and self.step>1000:
                 subprocess.call("/home/ampatish/scratch/test/MedSeg_modified/scripts/validate.sh")
 
            
