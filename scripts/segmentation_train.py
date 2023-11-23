@@ -61,7 +61,7 @@ def main():
     )
 
     if pretrained:
-        state_dict = dist_util.load_state_dict(args.model_path, map_location="cpu")
+        state_dict = dist_util.load_state_dict('/home/ampatish/scratch/test/MedSeg_modified/output/saved_model.pt', map_location="cpu")
         from collections import OrderedDict
         new_state_dict = OrderedDict()
         for k, v in state_dict.items():
