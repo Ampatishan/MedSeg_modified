@@ -89,7 +89,11 @@ def main():
     if args.use_fp16:
         model.convert_to_fp16()
     model.eval()
+    count  = 0
     for _ in range(len(data)):
+        count += 1
+        if count > 2 :
+            break
         b, m, path = next(data)  #should return an image from the dataloader "data"
         c = th.randn_like(b[:, :1, ...])
         img = th.cat((b, c), dim=1)     #add a noise channel$
