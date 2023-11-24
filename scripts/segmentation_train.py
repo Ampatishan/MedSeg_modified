@@ -21,7 +21,7 @@ viz = Visdom(port=8850)
 import torchvision.transforms as transforms
 
 def main():
-    pretrained = False
+    pretrained = True
     args = create_argparser().parse_args()
 
     dist_util.setup_dist(args)
@@ -73,6 +73,7 @@ def main():
                 new_state_dict = state_dict
 
         model.load_state_dict(new_state_dict)
+        print('starting from saved checkpoint')
     if args.multi_gpu:
         model = th.nn.DataParallel(model,device_ids=[int(id) for id in args.multi_gpu.split(',')])
         model.to(device = th.device('cuda', int(args.gpu_dev)))
